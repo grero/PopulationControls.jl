@@ -3,6 +3,24 @@ using LinearAlgebra
 using Random
 using Optim
 
+"""
+Compute the product between the matrix ⊗ᵢA and the vector b
+"""
+function kron_mvprod(A::Vector{Matrix{T}}, b::Vector{T}) where T <: Real
+    D = length(A)
+    N = length(b)
+    x = similar(b)
+    x .= b
+    for d in D:-1:1
+        Ad = A[d]
+        Gd = size(Ad,1)
+        X = reshape(x, Gd, div(N,Gd))
+        Z = (Ad*X)'
+        x .= vec(Z)
+    end
+    x
+end
+
 function kronsum(A::Matrix{T},B::Matrix{T}) where T <: Real
     IB = Matrix(1.0I,size(B)...)
     IA = Matrix(1.0I,size(A)...)

@@ -3,6 +3,17 @@ using Test
 using LinearAlgebra
 using Random
 
+@testset "Kroenecker matrix vector product" begin
+    RNG = MersenneTwister(1234)
+    A = [rand(RNG,n,n) for n in [3,4,5]]
+    N = prod([3,4,5])
+    b = rand(RNG, N) 
+    Ap = reduce(kron, A)
+    v1 = Ap*b
+    v2 = PopulationControls.kron_mvprod(A,b)
+    @test v1 ≈ v2
+end
+
 @testset "Basic" begin
     RNG = MersenneTwister(1234)
     n = 3
