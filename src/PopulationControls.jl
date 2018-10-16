@@ -24,7 +24,19 @@ end
 function kronsum(A::Matrix{T},B::Matrix{T}) where T <: Real
     IB = Matrix(1.0I,size(B)...)
     IA = Matrix(1.0I,size(A)...)
-    kron(A,IB) + kron(IA, B)
+    kron(A,IB) .+ kron(IA, B)
+end
+
+"""
+Efficiently computes the kronecker sum of diagonal matrices
+"""
+function diagkronsum(Λ::Vector{Vector{T}}) where T <: Real
+    N = length(Λ)
+    kk = fill(0.0, 1,1)
+    for λ in Λ 
+        kk = vec((kk*fill(1.0, length(λ),1)' .+ fill(1.0, length(kk),1)*λ')')
+    end 
+    kk
 end
 
 """

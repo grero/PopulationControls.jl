@@ -14,6 +14,15 @@ using Random
     @test v1 ≈ v2
 end
 
+@testset "Kronecker sum of diagonal matrices" begin
+    d1 = [1,2,3]
+    d2 = [5,6,7,8]
+    q1 = PopulationControls.diagkronsum([d1,d2])
+    #compare to straight up sum
+    q2 = diag(PopulationControls.kronsum(Matrix(Diagonal(d1)), Matrix(Diagonal(d2))))
+    @test q1 ≈ q2
+end
+
 @testset "Basic" begin
     RNG = MersenneTwister(1234)
     n = 3
