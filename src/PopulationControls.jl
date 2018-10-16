@@ -2,6 +2,7 @@ module PopulationControls
 using LinearAlgebra
 using Random
 using Optim
+using Base.Iterators
 
 """
 Compute the product between the matrix ⊗ᵢA and the vector b
@@ -53,7 +54,6 @@ function tensor_covariance(Σ::Vector{Matrix{T}};λ0=rand(sum(x->size(x,1), Σ))
         Q[i] = v
         vv += nn[i] 
     end
-    U = reduce(kron, Q)
     λ,fmin = find_λ2(S,nn,λ0)
     _λ = Vector{Matrix{T}}(undef, length(nn))
     vv = 0
@@ -61,7 +61,12 @@ function tensor_covariance(Σ::Vector{Matrix{T}};λ0=rand(sum(x->size(x,1), Σ))
         _λ[i] = Matrix(Diagonal(λ[vv+1:vv+nn[i]]))
         vv += nn[i]
     end
+    Q,_λ
+end
+
+function compose(Q,_λ)
     #TODO: Find the Kroencker sum
+    U = reduce(kron, Q)
     Λ = reduce(kronsum, _λ)
     U,Λ
 end
@@ -71,9 +76,22 @@ function get_s(λ::Vector{T},nn::Vector{Int64}) where T <: Real
     vv = 0
     for (i,n) in enumerate(nn)
         for d in 1:n
-            S[vv+d] = get_s(λ,nn, i,d)
+            S[vv+d] = get_s2(λ,nn, i,d)
         end
         vv += n
+    end
+    S
+end
+
+function get_s2(λ::Vector{T},nn::Vector{Int64}) where T <: Real
+    S = similar(λ)
+    vv = 0
+
+    n_iter = Iterators.product([1:n for n in nn]) 
+    for pp in n_iter
+       for (_k,_d) in enumerate(pp) 
+           S[sum(nn[1:_k-1])+_d] = get_s2(λ,nn, _k,_d)
+        end
     end
     S
 end
@@ -96,13 +114,28 @@ function get_s(λ::Vector{T},nn::Vector{Int64}, k::Int64,d::Int64) where T <: Re
     0.5*q
 end
 
+function get_s2(λ::Vector{T},nn::Vector{Int64}, k::Int64,d::Int64) where T <: Real
+    n_iter = Iterators.product([1:n for n in nn]...) 
+    vv = 0.0
+    for pp in n_iter
+        v = λ[sum(nn[1:k-1]) + d]
+       for (_k,_d) in enumerate(pp) 
+           if (_k != k)
+                v += λ[sum(nn[1:_k-1]) + _d]
+            end
+       end
+       vv += 1/v
+    end
+    0.5*vv
+end
+
 function costfunc(λ,S,nn)
     q = 0.0
     vv = 0
     for k in 1:length(nn)
         qq = 0.0
         for d in 1:nn[k] 
-            qq = S[vv+d] - get_s(λ,nn,k,d)
+            qq = S[vv+d] - get_s2(λ,nn,k,d)
             q += qq*qq
         end
         vv += nn[k]

@@ -34,7 +34,8 @@ end
     SS = kron(Σ[1], Σ[2])
     SS2 = reduce(kron, Σ)
     λ0 = rand(RNG, sum(x->size(x,1), Σ))
-    U,Λ = PopulationControls.tensor_covariance(Σ;λ0=λ0)
+    Q,_λ = PopulationControls.tensor_covariance(Σ;λ0=λ0)
+    U,Λ = PopulationControls.compose(Q, _λ)
     hu =  hash(U)
     @test hu == 0xfb803b574fe2e43e
     hl =  hash(Λ)
@@ -50,4 +51,3 @@ end
     s = PopulationControls.get_s(λ,nn,1,1)
     @show s
 end
-
