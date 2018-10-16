@@ -165,6 +165,18 @@ end
 function find_λ2(S::Vector{T},nn::Vector{Int64},λ0=rand(length(S))) where T <: Real
      q = optimize(x->PopulationControls.logcostfunc(x,S,nn), λ0,LBFGS();autodiff=:forward)
      exp.(q.minimizer), q.minimum
- end
+end
+
+function sample(Q::Vector{Matrix{T}}, Λ::Vector{Matrix{T}},n=1) where T <: Real
+    d = 1.0./sqrt.(diagkronsum(map(diag, Λ)))
+    N = length(d)
+    X = randn(N,n)
+    Z = zeros(N,n)
+    for i in 1:n
+        Y = X[:,i].*d 
+        Z[:,i] = kron_mvprod(Q, Y)
+    end
+    Z
+end
 
 end # module
