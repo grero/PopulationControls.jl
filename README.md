@@ -1,4 +1,5 @@
 # Introduction
+[![Build Status](https://travis-ci.org/grero/PopulationControls.jl.svg?branch=master)](https://travis-ci.org/grero/PopulationControls.jl)
 This is a julia implementation of the algorithm developed in Elsayed, G. F., & Cunningham, J. P. (2017). Structure in neural population recordings: an expected byproduct of simpler phenomena? Nature Neuroscience, 20(9), 1310–1318. http://doi.org/10.1038/nn.4617
 
 The authors' own Matlab implementation is here https://github.com/gamaleldin/TME
