@@ -1,7 +1,9 @@
 # Introduction
 This is a julia implementation of the algorithm developed in Elsayed, G. F., & Cunningham, J. P. (2017). Structure in neural population recordings: an expected byproduct of simpler phenomena? Nature Neuroscience, 20(9), 1310–1318. http://doi.org/10.1038/nn.4617
 
-In essence, the code fits a maximum entropy distribution over tensors that preserves marginally covariance matrices along the different tensor dimensions. Sampling from the resulting distribution provides a null distribution for testing whether so called population-level phenomena can be explained by the marginal covariances, or whether highle level features play a part.
+The authors' own Matlab implementation is here https://github.com/gamaleldin/TME
+
+In essence, the code fits a maximum entropy distribution over tensors that preserves marginally covariance matrices along the different tensor dimensions. Sampling from the resulting distribution provides a null distribution for testing whether so called population-level phenomena can be explained by the marginal covariances, or whether higher level features play a part.
 
 # Example
 
